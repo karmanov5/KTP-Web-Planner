@@ -644,7 +644,12 @@ const renderMainArea = () => {
 
                 const tr = document.createElement('tr');
                 tr.id = `topic-row-${topic._uid}`;
-                let linkHtml = topic.Link ? `<a href="${topic.Link}" target="_blank" class="topic-link tooltip" data-tooltip="Открыть"><i class="ph ph-link"></i></a>` : '';
+                let linkHtml = '';
+                if (topic.Link) {
+                    const urlMatch = topic.Link.match(/https?:\/\/[^\s]+/);
+                    const hrefUrl = urlMatch ? urlMatch[0] : topic.Link;
+                    linkHtml = `<a href="${hrefUrl}" target="_blank" class="topic-link tooltip" data-tooltip="Открыть"><i class="ph ph-link"></i></a>`;
+                }
 
                 const hwText = topic.HomeWork || topic.homeWork || topic.homework;
                 // Escape quotes for html attributes
