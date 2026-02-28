@@ -1111,6 +1111,17 @@ body {
   .form-row {
     flex-direction: column;
     gap: 12px;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  .form-row .form-group .form-control {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .form-row .btn {
