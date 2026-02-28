@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTP Web App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Phosphor Icons for elegant UI icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <!-- ── Login Screen ──────────────────────────────────────────────────── -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-logo">
+                <i class="ph-fill ph-calendar-check"></i>
+            </div>
+            <h1 class="login-title">KTP Web Planner</h1>
+            <p class="login-subtitle">Введите данные для входа</p>
+
+            <form class="login-form" id="loginForm" autocomplete="on">
+                <div class="login-field">
+                    <i class="ph ph-user login-field-icon"></i>
+                    <input class="login-input" type="text" id="loginUsername" name="username" placeholder="Логин"
+                        autocomplete="username" autofocus>
+                </div>
+                <div class="login-field">
+                    <i class="ph ph-lock login-field-icon"></i>
+                    <input class="login-input" type="password" id="loginPassword" name="password" placeholder="Пароль"
+                        autocomplete="current-password">
+                    <button type="button" class="login-eye-btn" id="loginEyeBtn" tabindex="-1">
+                        <i class="ph ph-eye" id="loginEyeIcon"></i>
+                    </button>
+                </div>
+                <div class="login-error hidden" id="loginError">
+                    <i class="ph ph-warning-circle"></i>
+                    <span id="loginErrorText">Неверный логин или пароль</span>
+                </div>
+                <button type="submit" class="login-btn" id="loginSubmitBtn">
+                    <span id="loginBtnText">Войти</span>
+                    <i class="ph ph-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer" style="visibility:hidden">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="ph-fill ph-calendar-check"></i>
+                    <span>KTP Web Planner</span>
+                </div>
+            </div>
+
+            <div class="sidebar-actions">
+                <button id="addSubjectBtn" class="btn btn-primary btn-full">
+                    <i class="ph ph-plus"></i>
+                    Новый предмет
+                </button>
+                <button id="holidaysBtn" onclick="showHolidays()" class="btn btn-secondary btn-full"
+                    style="margin-top: 8px;">
+                    <i class="ph ph-calendar-x"></i>
+                    Каникулы
+                </button>
+            </div>
+
+            <div class="subject-list-title">
+                Ваши предметы
+            </div>
+            <ul class="subject-list" id="subjectList">
+                <!-- Subject items will be injected here -->
+            </ul>
+
+            <div class="sidebar-footer">
+                <!-- Yandex Disk Status -->
+                <div id="yandexStatusBadge"
+                    style="display:flex; align-items:center; gap:6px; padding: 8px 4px; color: var(--text-muted); font-size: 0.8rem; margin-bottom:8px; min-height: 28px;">
+                    <i class="ph ph-cloud" style="color:var(--text-muted)"></i>
+                    <span style="font-size:0.75rem;">Проверка Яндекс Диска...</span>
+                </div>
+                <div class="action-buttons">
+                    <label class="btn btn-secondary tooltip" data-tooltip="Загрузить из ktp.json">
+                        <i class="ph ph-upload-simple"></i>
+                        <span>Загрузить</span>
+                        <input type="file" id="loadJsonInput" accept=".json" hidden>
+                    </label>
+                    <button class="btn btn-secondary tooltip" id="saveJsonBtn" data-tooltip="Скачать ktp.json локально">
+                        <i class="ph ph-download-simple"></i>
+                        <span>Скачать</span>
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-full" id="saveYandexBtn" onclick="saveToYandex()"
+                    style="margin-top: 8px; display:none;" title="Сохранить на Яндекс Диск">
+                    <i class="ph ph-cloud-arrow-up"></i>
+                    <span>Сохранить в облако</span>
+                </button>
+                <button class="btn btn-secondary btn-full" id="loadYandexBtn"
+                    onclick="loadFromYandex().then(ok => { if(ok){initAfterLoad();}})"
+                    style="margin-top: 4px; display:none;" title="Перезагрузить с Яндекс Диска">
+                    <i class="ph ph-cloud-arrow-down"></i>
+                    <span>Загрузить из облака</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="mobile-topbar" id="mobileTopbar">
+                <div class="logo">
+                    <i class="ph-fill ph-calendar-check"></i>
+                    <span>KTP Web Planner</span>
+                </div>
+                <button class="btn btn-icon" id="mobileMenuBtn">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
+
+            <!-- Mobile sticky subject info banner -->
+            <div class="mobile-subject-banner hidden" id="mobileSubjectBanner">
+                <div class="mobile-subject-banner-info">
+                    <i class="ph ph-book-open"></i>
+                    <div>
+                        <div class="mobile-subject-banner-name" id="mobileSubjectName">—</div>
+                        <div class="mobile-subject-banner-count" id="mobileSubjectCount"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <i class="ph ph-books"></i>
+                </div>
+                <h2>Выберите предмет</h2>
+                <p>Или создайте новый для начала работы с календарно-тематическим планом.</p>
+            </div>
+
+            <div class="subject-view hidden" id="subjectView">
+                <header class="subject-header">
+                    <div class="subject-info">
+                        <h1 id="subjectNameHeader">Название предмета</h1>
+                        <div class="subject-meta">
+                            <span class="badge" id="subjectClassBadge"><i class="ph ph-student"></i> 11А</span>
+                            <span class="meta-item" id="subjectDates"><i class="ph ph-calendar"></i> 01.09.2023 -
+                                30.05.2024</span>
+                        </div>
+                    </div>
+                    <div class="subject-actions">
+                        <button class="btn btn-icon tooltip" id="pasteExcelBtn" data-tooltip="Вставить темы из Excel">
+                            <i class="ph ph-table"></i>
+                        </button>
+                        <button class="btn btn-icon tooltip" id="autoDateBtn" data-tooltip="Авто-распределение дат">
+                            <i class="ph ph-magic-wand"></i>
+                        </button>
+                        <button class="btn btn-icon tooltip" id="editSubjectBtn" data-tooltip="Редактировать предмет">
+                            <i class="ph ph-pencil-simple"></i>
+                        </button>
+                        <button class="btn btn-icon danger tooltip" id="deleteSubjectBtn"
+                            data-tooltip="Удалить предмет">
+                            <i class="ph ph-trash"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Темы занятий</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-sm btn-primary" id="addTopicBtn">
+                                <i class="ph ph-plus"></i> Добавить тему
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="topic-table">
+                            <thead>
+                                <tr>
+                                    <th width="40">#</th>
+                                    <th width="110">Дата</th>
+                                    <th>Тема</th>
+                                    <th width="80">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topicTableBody">
+                                <!-- Topics will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- table-container -->
+            </div> <!-- subject-view -->
+        </main>
+
+        <button class="btn fab-btn hidden" id="scrollToActiveBtn" title="Ближайшая тема">
+            <i class="ph ph-target"></i>
+            <span style="font-size:0.85rem;">Ближайшая</span>
+        </button>
+    </div> <!-- app-container -->
+
+    <!-- Modals -->
+
+    <!-- Holidays Modal -->
+    <div class="modal" id="holidaysModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Настройка каникул</h2>
+                <button class="btn-close" id="closeHolidaysModal"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Укажите даты каникул. При авто-распределении тем, эти даты будут пропускаться.
+                </p>
+                <div class="form-row" style="align-items: flex-end; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>С даты</label>
+                        <input type="date" id="holidayStartInput" class="form-control">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>По дату (необязательно)</label>
+                        <input type="date" id="holidayEndInput" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" id="addHolidayBtn">Добавить</button>
+                </div>
+                <div class="holidays-list" id="holidaysList" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <!-- List of dates -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="doneHolidaysBtn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paste Excel Modal -->
+    <div class="modal" id="pasteExcelModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Вставка тем из Excel</h2>
+                <button class="btn-close" id="closePasteExcelModal"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Скопируйте ячейки из таблицы (Excel/Word) и вставьте сюда.
+                </p>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label>Вставляемые столбцы (по порядку слева направо)</label>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+                        <label class="day-cb"><input type="checkbox" id="colSectionCb" checked> Раздел</label>
+                        <label class="day-cb"><input type="checkbox" id="colTopicCb" checked disabled> Тема
+                            (обязательно)</label>
+                        <label class="day-cb"><input type="checkbox" id="colHwCb" checked> Д/З</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea id="excelPasteArea" class="form-control" rows="10"
+                        placeholder="Алгебра    Квадратный корень    Стр. 25, №1-5..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPasteExcelModal">Отмена</button>
+                <button class="btn btn-primary" id="savePasteExcelBtn">Конвертировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Modal -->
+    <div class="modal" id="subjectModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h2 id="subjectModalTitle">Добавить предмет</h2>
+                <button class="btn-close" id="closeSubjectModal"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Название предмета</label>
+                        <input type="text" id="subjNameInput" class="form-control" placeholder="Например: Математика">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Класс</label>
+                        <input type="text" id="subjClassInput" class="form-control" placeholder="Например: 11А">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата начала</label>
+                        <input type="date" id="subjStartInput" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Дата окончания</label>
+                        <input type="date" id="subjEndInput" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 8px;">
+                    <label>Дни проведения занятий</label>
+                    <div class="days-container" id="daysContainer" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <label class="day-cb"><input type="checkbox" data-day="понедельник"> Пн</label>
+                        <label class="day-cb"><input type="checkbox" data-day="вторник"> Вт</label>
+                        <label class="day-cb"><input type="checkbox" data-day="среда"> Ср</label>
+                        <label class="day-cb"><input type="checkbox" data-day="четверг"> Чт</label>
+                        <label class="day-cb"><input type="checkbox" data-day="пятница"> Пт</label>
+                        <label class="day-cb"><input type="checkbox" data-day="суббота"> Сб</label>
+                        <label class="day-cb"><input type="checkbox" data-day="воскресенье"> Вс</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSubjectModal">Отмена</button>
+                <button class="btn btn-primary" id="saveSubjectBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topic Modal -->
+    <div class="modal" id="topicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="topicModalTitle">Добавить тему</h2>
+                <button class="btn-close" id="closeTopicModal"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Номер (ID)</label>
+                        <input type="number" id="topicIdInput" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Дата</label>
+                        <input type="date" id="topicDateInput" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Раздел</label>
+                    <input type="text" id="topicSectionInput" class="form-control"
+                        placeholder="Например: Алгебраические выражения">
+                </div>
+                <div class="form-group">
+                    <label>Название темы</label>
+                    <input type="text" id="topicNameInput" class="form-control" placeholder="Введите название...">
+                </div>
+                <div class="form-group">
+                    <label>Домашнее задание</label>
+                    <textarea id="topicHwInput" class="form-control" rows="2"
+                        placeholder="Домашнее задание..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ссылка (если есть)</label>
+                    <input type="url" id="topicLinkInput" class="form-control" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTopicModal">Отмена</button>
+                <button class="btn btn-primary" id="saveTopicBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
