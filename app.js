@@ -18,7 +18,7 @@ const showApp = () => {
 
 const doLogout = async () => {
     try {
-        await fetch('/api/logout', { method: 'POST', headers: getAuthHeaders() });
+        await fetch('api/logout', { method: 'POST', headers: getAuthHeaders() });
     } catch { }
     authToken = null;
     localStorage.removeItem('ktp_auth_token');
@@ -32,7 +32,7 @@ const doLogout = async () => {
     // 1. If we have a stored token, verify it with the server
     if (authToken) {
         try {
-            const res = await fetch('/api/auth-check', {
+            const res = await fetch('api/auth-check', {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
             if (res.ok) {
@@ -77,7 +77,7 @@ const doLogout = async () => {
         const password = document.getElementById('loginPassword').value;
 
         try {
-            const res = await fetch('/api/login', {
+            const res = await fetch('api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ login, password }),
@@ -370,7 +370,7 @@ const showToast = (message, type = 'info') => {
 let isServerMode = false;
 const detectServerMode = async () => {
     try {
-        const res = await fetch('/api/yandex/status', {
+        const res = await fetch('api/yandex/status', {
             method: 'GET',
             headers: { 'Authorization': authToken ? `Bearer ${authToken}` : '' }
         }).catch(() => null);
@@ -422,7 +422,7 @@ window.initAfterLoad = () => {
 const loadFromYandex = async () => {
     const loadingToast = showToast('Загрузка с Яндекс Диска...', 'loading');
     try {
-        const res = await fetch('/api/ktp', {
+        const res = await fetch('api/ktp', {
             headers: { 'Authorization': authToken ? `Bearer ${authToken}` : '' }
         });
         if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
@@ -522,7 +522,7 @@ const saveToYandex = async () => {
     const loadingToast = showToast('Сохранение на Яндекс Диске...', 'loading');
     try {
         const payload = prepareForSave();          // clean copy, C#-compatible
-        const res = await fetch('/api/ktp', {
+        const res = await fetch('api/ktp', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(payload)
