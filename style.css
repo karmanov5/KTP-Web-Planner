@@ -1113,10 +1113,12 @@ body {
     gap: 12px;
     align-items: stretch;
     width: 100%;
+    box-sizing: border-box;
   }
 
   .form-row .form-group {
     width: 100%;
+    box-sizing: border-box;
   }
 
   .form-row .form-group .form-control {
@@ -1126,6 +1128,7 @@ body {
 
   .form-row .btn {
     width: 100%;
+    box-sizing: border-box;
   }
 
   .topic-date {
