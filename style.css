@@ -1272,15 +1272,29 @@ body {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.schedule-day-card.current-day {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.15);
+  transform: translateY(-2px);
+}
+
+.schedule-day-card.current-day .schedule-day-title {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
 }
 
 .schedule-day-title {
   margin: 0 0 16px 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-color);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .schedule-subjects {
@@ -1296,7 +1310,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px;
+  padding: 10px 12px;
   background: var(--surface-color);
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -1312,33 +1326,35 @@ body {
   background: var(--primary-light);
   color: var(--primary-color);
   font-weight: 600;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .schedule-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .schedule-subname {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
+  color: var(--text-color);
 }
 
 .schedule-class {
   font-size: 0.75rem;
-  color: var(--text-muted);
-  background: var(--bg-color);
+  color: #fff;
+  background: var(--primary-color);
   display: inline-block;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
   align-self: flex-start;
+  font-weight: 500;
 }
