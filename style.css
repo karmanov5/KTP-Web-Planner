@@ -388,6 +388,12 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.active-orange {
+  background-color: #F97316 !important;
+  color: #fff !important;
+  border-color: #EA580C !important;
+}
+
 .btn-full {
   width: 100%;
   justify-content: center;

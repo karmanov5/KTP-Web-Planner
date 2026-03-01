@@ -1564,6 +1564,8 @@ window.addScheduleSubj = (dayId) => {
     document.getElementById('scheduleSubjModalTitle').innerText = 'Добавить предмет';
     document.getElementById('schedSubjNameInput').value = '';
     document.getElementById('schedSubjClassInput').value = '';
+    window.activeClassTokens = [];
+    if (window.renderClassButtons) window.renderClassButtons();
     fillUserSubjectsDataList();
     showModal('scheduleSubjModal');
 };
@@ -1573,40 +1575,71 @@ window.editScheduleSubj = (dayId, subjIndex) => {
     document.getElementById('scheduleSubjModalTitle').innerText = 'Редактировать предмет';
 
     const day = scheduleData.Days.find(d => d.Id === dayId);
+    window.activeClassTokens = [];
     if (day && day.Subjects[subjIndex]) {
         const sub = day.Subjects[subjIndex];
         document.getElementById('schedSubjNameInput').value = sub.Name !== 'Нет' ? sub.Name : '';
-        document.getElementById('schedSubjClassInput').value = sub.ClassName !== '-' ? sub.ClassName : '';
+        const classStr = sub.ClassName !== '-' ? sub.ClassName : '';
+        document.getElementById('schedSubjClassInput').value = classStr;
+
+        if (classStr) {
+            const tokenRegex = /(11|10|[1-9]|инд|1 гр|2 гр|[а-яА-ЯёЁ])/gi;
+            const matches = classStr.toLowerCase().match(tokenRegex);
+            if (matches) {
+                const valid = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "а", "б", "в", "г", "д", "инд", "1 гр", "2 гр"];
+                matches.forEach(m => {
+                    if (valid.includes(m) && !window.activeClassTokens.includes(m)) {
+                        window.activeClassTokens.push(m);
+                    }
+                });
+            }
+        }
     }
+    if (window.renderClassButtons) window.renderClassButtons();
     fillUserSubjectsDataList();
     showModal('scheduleSubjModal');
 };
 
-window.appendClassInput = (str) => {
-    const el = document.getElementById('schedSubjClassInput');
-    let val = el.value;
+window.activeClassTokens = [];
 
-    // Auto-comma logic: if appending a main number and there's already a class
-    if (/^\d+$/.test(str) && val.trim().length > 0 && /[а-яА-ЯёЁa-zA-Z\d]$/.test(val.trim())) {
-        val = val.trim() + ', ';
-    }
-
-    el.value = val + str;
-    el.focus();
+window.updateClassInputFromTokens = () => {
+    let className = "";
+    window.activeClassTokens.forEach((tok, i) => {
+        if (i === 0) {
+            className += tok;
+        } else {
+            if (/^[а-яА-ЯёЁ]$/.test(tok) && /^\d+$/.test(window.activeClassTokens[i - 1])) {
+                className += tok;
+            } else if (/^[а-яА-ЯёЁ]$/.test(tok) && /^[а-яА-ЯёЁ]$/.test(window.activeClassTokens[i - 1])) {
+                className += ", " + tok;
+            } else {
+                className += ", " + tok;
+            }
+        }
+    });
+    document.getElementById('schedSubjClassInput').value = className;
 };
 
-window.backspaceClassInput = () => {
-    const el = document.getElementById('schedSubjClassInput');
-    if (el.value.length > 0) {
-        el.value = el.value.slice(0, -1);
-    }
-    el.focus();
+window.renderClassButtons = () => {
+    document.querySelectorAll('.class-keyboard .class-btn').forEach(btn => {
+        if (window.activeClassTokens.includes(btn.dataset.val)) {
+            btn.classList.add('active-orange');
+            btn.classList.remove('btn-secondary');
+        } else {
+            btn.classList.remove('active-orange');
+            btn.classList.add('btn-secondary');
+        }
+    });
+    window.updateClassInputFromTokens();
 };
 
-window.clearClassInput = () => {
-    const el = document.getElementById('schedSubjClassInput');
-    el.value = '';
-    el.focus();
+window.toggleClassBtn = (val) => {
+    if (window.activeClassTokens.includes(val)) {
+        window.activeClassTokens = window.activeClassTokens.filter(x => x !== val);
+    } else {
+        window.activeClassTokens.push(val);
+    }
+    window.renderClassButtons();
 };
 
 window.deleteScheduleSubj = (dayId, subjIndex) => {

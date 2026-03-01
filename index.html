@@ -237,56 +237,52 @@
                 </div>
                 <div class="form-group">
                     <label>Кабинет / Класс / Группа</label>
-                    <input type="text" id="schedSubjClassInput" class="form-control" placeholder="Например: 11, инд">
+                    <input type="hidden" id="schedSubjClassInput">
                     <!-- Class Fast Input Keyboard -->
-                    <div class="class-keyboard" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">
+                    <div class="class-keyboard" style="display: flex; flex-wrap: wrap; gap: 4px;">
                         <!-- Numbers -->
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('1')">1</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('2')">2</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('3')">3</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('4')">4</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('5')">5</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('6')">6</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('7')">7</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('8')">8</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('9')">9</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('10')">10</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('11')">11</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="1"
+                            onclick="toggleClassBtn('1')">1</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="2"
+                            onclick="toggleClassBtn('2')">2</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="3"
+                            onclick="toggleClassBtn('3')">3</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="4"
+                            onclick="toggleClassBtn('4')">4</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="5"
+                            onclick="toggleClassBtn('5')">5</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="6"
+                            onclick="toggleClassBtn('6')">6</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="7"
+                            onclick="toggleClassBtn('7')">7</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="8"
+                            onclick="toggleClassBtn('8')">8</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="9"
+                            onclick="toggleClassBtn('9')">9</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="10"
+                            onclick="toggleClassBtn('10')">10</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="11"
+                            onclick="toggleClassBtn('11')">11</button>
                         <div style="width: 100%; height: 0;"></div>
                         <!-- Letters -->
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('а')">а</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('б')">б</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('в')">в</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('г')">г</button>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput('д')">д</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="а"
+                            onclick="toggleClassBtn('а')">а</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="б"
+                            onclick="toggleClassBtn('б')">б</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="в"
+                            onclick="toggleClassBtn('в')">в</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="г"
+                            onclick="toggleClassBtn('г')">г</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="д"
+                            onclick="toggleClassBtn('д')">д</button>
                         <div style="width: 100%; height: 0;"></div>
                         <!-- Special -->
-                        <button type="button" class="btn btn-sm btn-secondary"
-                            onclick="appendClassInput(' инд')">инд</button>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="appendClassInput(' 1 гр')">1
-                            гр</button>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="appendClassInput(' 2 гр')">2
-                            гр</button>
-                        <button type="button" class="btn btn-sm btn-secondary" style="flex:1;"
-                            onclick="clearClassInput()"><i class="ph ph-trash"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary" style="flex:1;"
-                            onclick="backspaceClassInput()"><i class="ph ph-backspace"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="инд"
+                            onclick="toggleClassBtn('инд')">инд</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="1 гр"
+                            onclick="toggleClassBtn('1 гр')">1 гр</button>
+                        <button type="button" class="btn btn-sm btn-secondary class-btn" data-val="2 гр"
+                            onclick="toggleClassBtn('2 гр')">2 гр</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -452,7 +448,7 @@
             </div>
         </div>
 
-        <script src="app.js?v=10"></script>
+        <script src="app.js?v=11"></script>
 </body>
 
 </html>
