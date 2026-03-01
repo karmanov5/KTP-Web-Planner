@@ -420,6 +420,13 @@ body {
   font-size: 0.8rem;
 }
 
+.class-btn {
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  min-width: 44px;
+}
+
 /* Modals */
 .modal {
   position: fixed;
