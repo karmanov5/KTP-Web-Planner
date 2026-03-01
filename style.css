@@ -1275,17 +1275,17 @@ body {
 }
 
 .schedule-day-card {
-  background: var(--surface-light);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .schedule-day-card.current-day {
-  border-color: var(--primary-color);
-  box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.15);
+  border-color: #FF9800;
+  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.15);
   transform: translateY(-2px);
 }
 
@@ -1297,12 +1297,12 @@ body {
   margin: 0 0 16px 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(255, 255, 255, 0.05));
   padding: 10px 16px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .schedule-subjects {
@@ -1319,7 +1319,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: var(--surface-color);
+  background: var(--bg-tertiary);
   border-radius: 8px;
   border: 1px solid var(--border-color);
 }
@@ -1331,8 +1331,8 @@ body {
 }
 
 .schedule-num {
-  background: var(--primary-light);
-  color: var(--primary-color);
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-primary);
   font-weight: 600;
   width: 32px;
   height: 32px;
@@ -1353,13 +1353,13 @@ body {
 .schedule-subname {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 .schedule-class {
   font-size: 0.75rem;
   color: #fff;
-  background: var(--primary-color);
+  background: var(--accent-primary);
   display: inline-block;
   padding: 3px 8px;
   border-radius: 12px;
