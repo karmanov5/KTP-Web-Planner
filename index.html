@@ -58,6 +58,12 @@
                 </div>
             </div>
 
+            <div class="main-tabs" style="display: flex; gap: 8px; padding: 0 16px; margin-bottom: 12px;">
+                <button id="tabKtp" class="btn btn-primary" style="flex: 1; justify-content: center;">КТП</button>
+                <button id="tabSchedule" class="btn btn-secondary"
+                    style="flex: 1; justify-content: center;">Расписание</button>
+            </div>
+
             <div class="sidebar-actions">
                 <button id="addSubjectBtn" class="btn btn-primary btn-full">
                     <i class="ph ph-plus"></i>
@@ -193,6 +199,17 @@
                     </div>
                 </div> <!-- table-container -->
             </div> <!-- subject-view -->
+
+            <div class="schedule-view hidden" id="scheduleView">
+                <header class="subject-header">
+                    <div class="subject-info">
+                        <h1>Расписание занятий</h1>
+                    </div>
+                </header>
+                <div class="schedule-grid" id="scheduleGrid" style="padding: 16px;">
+                    <!-- Schedule days and subjects will be injected here -->
+                </div>
+            </div> <!-- schedule-view -->
         </main>
 
         <button class="btn fab-btn hidden" id="scrollToActiveBtn" title="Ближайшая тема">

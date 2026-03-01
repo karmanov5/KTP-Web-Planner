@@ -145,6 +145,12 @@ const el = {
     subjectList: document.getElementById('subjectList'),
     emptyState: document.getElementById('emptyState'),
     subjectView: document.getElementById('subjectView'),
+    scheduleView: document.getElementById('scheduleView'),
+    scheduleGrid: document.getElementById('scheduleGrid'),
+    tabKtp: document.getElementById('tabKtp'),
+    tabSchedule: document.getElementById('tabSchedule'),
+    sidebarActions: document.querySelector('.sidebar-actions'),
+    subjectListTitle: document.querySelector('.subject-list-title'),
     subjectNameHeader: document.getElementById('subjectNameHeader'),
     subjectClassBadge: document.getElementById('subjectClassBadge'),
     subjectDates: document.getElementById('subjectDates'),
@@ -1370,5 +1376,111 @@ document.getElementById('sidebarOverlay')?.addEventListener('click', () => {
     document.getElementById('sidebarOverlay')?.classList.remove('show');
 });
 
+// --- Schedule Logic ---
+let scheduleData = null;
+
+const initTabs = () => {
+    el.tabKtp?.addEventListener('click', () => switchTab('ktp'));
+    el.tabSchedule?.addEventListener('click', () => switchTab('schedule'));
+};
+
+const switchTab = (tab) => {
+    if (tab === 'ktp') {
+        el.tabKtp.classList.replace('btn-secondary', 'btn-primary');
+        el.tabSchedule.classList.replace('btn-primary', 'btn-secondary');
+
+        if (el.subjectList) el.subjectList.style.display = 'block';
+        if (el.sidebarActions) el.sidebarActions.style.display = 'block';
+        if (el.subjectListTitle) el.subjectListTitle.style.display = 'block';
+
+        el.scheduleView?.classList.add('hidden');
+        renderMainArea(); // shows subjectView or emptyState
+    } else {
+        el.tabSchedule.classList.replace('btn-secondary', 'btn-primary');
+        el.tabKtp.classList.replace('btn-primary', 'btn-secondary');
+
+        if (el.subjectList) el.subjectList.style.display = 'none';
+        if (el.sidebarActions) el.sidebarActions.style.display = 'none';
+        if (el.subjectListTitle) el.subjectListTitle.style.display = 'none';
+
+        el.subjectView?.classList.add('hidden');
+        el.emptyState?.classList.add('hidden');
+        document.getElementById('mobileSubjectBanner')?.classList.add('hidden');
+
+        el.scheduleView?.classList.remove('hidden');
+
+        if (!scheduleData) {
+            loadSchedule();
+        } else {
+            renderSchedule();
+        }
+    }
+};
+
+const loadSchedule = async () => {
+    if (!el.scheduleGrid) return;
+    try {
+        el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><i class="ph ph-spinner ph-spin" style="font-size: 2rem;"></i><p>Загрузка расписания...</p></div>';
+        const res = await fetch('settings.json');
+        if (!res.ok) throw new Error('settings.json not found');
+        scheduleData = await res.json();
+        renderSchedule();
+    } catch (e) {
+        el.scheduleGrid.innerHTML = '<div style="color:var(--danger); padding:16px;">Ошибка загрузки расписания. Убедитесь, что settings.xml был сохранён как settings.json.</div>';
+    }
+};
+
+const renderSchedule = () => {
+    if (!scheduleData || !scheduleData.Days) return;
+    let html = '';
+
+    // Sort days by Id (1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri)
+    const days = [...scheduleData.Days].sort((a, b) => a.Id - b.Id);
+
+    days.forEach(day => {
+        if (!day.Subjects || day.Subjects.length === 0) return;
+        // Check if there's any active subject this day
+        const activeSubjects = day.Subjects.filter(s => s.Name !== "Нет" || s.ClassName !== "-");
+        if (activeSubjects.length === 0) return;
+
+        html += `<div class="schedule-day-card">`;
+        html += `<h3 class="schedule-day-title">${day.Name}</h3>`;
+        html += `<ul class="schedule-subjects">`;
+
+        day.Subjects.forEach((sub, i) => {
+            const isEmpty = (sub.Name === "Нет" && sub.ClassName === "-");
+            const isNoClass = (sub.ClassName === "");
+            if (isEmpty || isNoClass) {
+                // If it's completely empty at the end of the day, we might trim it, but let's just show it light
+                html += `<li class="schedule-subject-item empty">
+                    <div class="schedule-num">${sub.Id || (i + 1)}</div>
+                    <div class="schedule-details">
+                        <div class="schedule-subname">—</div>
+                    </div>
+                </li>`;
+            } else {
+                html += `<li class="schedule-subject-item">
+                    <div class="schedule-num">${sub.Id || (i + 1)}</div>
+                    <div class="schedule-details">
+                        <div class="schedule-subname">${sub.Name}</div>
+                        ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
+                    </div>
+                </li>`;
+            }
+        });
+        html += `</ul></div>`;
+    });
+
+    if (!html) {
+        html = '<div style="color: var(--text-muted); padding:16px;">Расписание пустое.</div>';
+    }
+
+    if (el.scheduleGrid) {
+        el.scheduleGrid.innerHTML = `<div class="schedule-days-grid">${html}</div>`;
+    }
+};
+
 // Start
+initTabs();
 init();
+
