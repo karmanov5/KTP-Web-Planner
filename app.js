@@ -1582,6 +1582,33 @@ window.editScheduleSubj = (dayId, subjIndex) => {
     showModal('scheduleSubjModal');
 };
 
+window.appendClassInput = (str) => {
+    const el = document.getElementById('schedSubjClassInput');
+    let val = el.value;
+
+    // Auto-comma logic: if appending a main number and there's already a class
+    if (/^\d+$/.test(str) && val.trim().length > 0 && /[а-яА-ЯёЁa-zA-Z\d]$/.test(val.trim())) {
+        val = val.trim() + ', ';
+    }
+
+    el.value = val + str;
+    el.focus();
+};
+
+window.backspaceClassInput = () => {
+    const el = document.getElementById('schedSubjClassInput');
+    if (el.value.length > 0) {
+        el.value = el.value.slice(0, -1);
+    }
+    el.focus();
+};
+
+window.clearClassInput = () => {
+    const el = document.getElementById('schedSubjClassInput');
+    el.value = '';
+    el.focus();
+};
+
 window.deleteScheduleSubj = (dayId, subjIndex) => {
     const day = scheduleData.Days.find(d => d.Id === dayId);
     if (day && day.Subjects) {

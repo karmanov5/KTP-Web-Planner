@@ -238,170 +238,221 @@
                 <div class="form-group">
                     <label>Кабинет / Класс / Группа</label>
                     <input type="text" id="schedSubjClassInput" class="form-control" placeholder="Например: 11, инд">
+                    <!-- Class Fast Input Keyboard -->
+                    <div class="class-keyboard" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">
+                        <!-- Numbers -->
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('1')">1</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('2')">2</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('3')">3</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('4')">4</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('5')">5</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('6')">6</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('7')">7</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('8')">8</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('9')">9</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('10')">10</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('11')">11</button>
+                        <div style="width: 100%; height: 0;"></div>
+                        <!-- Letters -->
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('а')">а</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('б')">б</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('в')">в</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('г')">г</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput('д')">д</button>
+                        <div style="width: 100%; height: 0;"></div>
+                        <!-- Special -->
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="appendClassInput(' инд')">инд</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="appendClassInput(' 1 гр')">1
+                            гр</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="appendClassInput(' 2 гр')">2
+                            гр</button>
+                        <button type="button" class="btn btn-sm btn-secondary" style="flex:1;"
+                            onclick="clearClassInput()"><i class="ph ph-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary" style="flex:1;"
+                            onclick="backspaceClassInput()"><i class="ph ph-backspace"></i></button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelSchedSubjModal">Отмена</button>
+                    <button class="btn btn-primary" id="saveSchedSubjBtn">Сохранить</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelSchedSubjModal">Отмена</button>
-                <button class="btn btn-primary" id="saveSchedSubjBtn">Сохранить</button>
+        </div> <!-- Holidays Modal -->
+        <div class="modal" id="holidaysModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Настройка каникул</h2>
+                    <button class="btn-close" id="closeHolidaysModal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                        Укажите даты каникул. При авто-распределении тем, эти даты будут пропускаться.
+                    </p>
+                    <div class="form-row" style="align-items: flex-end; margin-bottom: 16px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>С даты</label>
+                            <input type="date" id="holidayStartInput" class="form-control">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>По дату (необязательно)</label>
+                            <input type="date" id="holidayEndInput" class="form-control">
+                        </div>
+                        <button class="btn btn-primary" id="addHolidayBtn">Добавить</button>
+                    </div>
+                    <div class="holidays-list" id="holidaysList" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <!-- List of dates -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="doneHolidaysBtn">Закрыть</button>
+                </div>
             </div>
         </div>
-    </div> <!-- Holidays Modal -->
-    <div class="modal" id="holidaysModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Настройка каникул</h2>
-                <button class="btn-close" id="closeHolidaysModal"><i class="ph ph-x"></i></button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Укажите даты каникул. При авто-распределении тем, эти даты будут пропускаться.
-                </p>
-                <div class="form-row" style="align-items: flex-end; margin-bottom: 16px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>С даты</label>
-                        <input type="date" id="holidayStartInput" class="form-control">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>По дату (необязательно)</label>
-                        <input type="date" id="holidayEndInput" class="form-control">
-                    </div>
-                    <button class="btn btn-primary" id="addHolidayBtn">Добавить</button>
-                </div>
-                <div class="holidays-list" id="holidaysList" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <!-- List of dates -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="doneHolidaysBtn">Закрыть</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Paste Excel Modal -->
-    <div class="modal" id="pasteExcelModal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h2>Вставка тем из Excel</h2>
-                <button class="btn-close" id="closePasteExcelModal"><i class="ph ph-x"></i></button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Скопируйте ячейки из таблицы (Excel/Word) и вставьте сюда.
-                </p>
-                <div class="form-group" style="margin-bottom: 16px;">
-                    <label>Вставляемые столбцы (по порядку слева направо)</label>
-                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
-                        <label class="day-cb"><input type="checkbox" id="colSectionCb" checked> Раздел</label>
-                        <label class="day-cb"><input type="checkbox" id="colTopicCb" checked disabled> Тема
-                            (обязательно)</label>
-                        <label class="day-cb"><input type="checkbox" id="colHwCb" checked> Д/З</label>
-                    </div>
+        <!-- Paste Excel Modal -->
+        <div class="modal" id="pasteExcelModal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>Вставка тем из Excel</h2>
+                    <button class="btn-close" id="closePasteExcelModal"><i class="ph ph-x"></i></button>
                 </div>
-                <div class="form-group">
-                    <textarea id="excelPasteArea" class="form-control" rows="10"
-                        placeholder="Алгебра    Квадратный корень    Стр. 25, №1-5..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelPasteExcelModal">Отмена</button>
-                <button class="btn btn-primary" id="savePasteExcelBtn">Конвертировать</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Subject Modal -->
-    <div class="modal" id="subjectModal">
-        <div class="modal-content" style="max-width: 550px;">
-            <div class="modal-header">
-                <h2 id="subjectModalTitle">Добавить предмет</h2>
-                <button class="btn-close" id="closeSubjectModal"><i class="ph ph-x"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group" style="flex: 2;">
-                        <label>Название предмета</label>
-                        <input type="text" id="subjNameInput" class="form-control" placeholder="Например: Математика">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Класс</label>
-                        <input type="text" id="subjClassInput" class="form-control" placeholder="Например: 11А">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата начала</label>
-                        <input type="date" id="subjStartInput" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Дата окончания</label>
-                        <input type="date" id="subjEndInput" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 8px;">
-                    <label>Дни проведения занятий</label>
-                    <div class="days-container" id="daysContainer" style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <label class="day-cb"><input type="checkbox" data-day="понедельник"> Пн</label>
-                        <label class="day-cb"><input type="checkbox" data-day="вторник"> Вт</label>
-                        <label class="day-cb"><input type="checkbox" data-day="среда"> Ср</label>
-                        <label class="day-cb"><input type="checkbox" data-day="четверг"> Чт</label>
-                        <label class="day-cb"><input type="checkbox" data-day="пятница"> Пт</label>
-                        <label class="day-cb"><input type="checkbox" data-day="суббота"> Сб</label>
-                        <label class="day-cb"><input type="checkbox" data-day="воскресенье"> Вс</label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelSubjectModal">Отмена</button>
-                <button class="btn btn-primary" id="saveSubjectBtn">Сохранить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Topic Modal -->
-    <div class="modal" id="topicModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="topicModalTitle">Добавить тему</h2>
-                <button class="btn-close" id="closeTopicModal"><i class="ph ph-x"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Номер (ID)</label>
-                        <input type="number" id="topicIdInput" class="form-control">
+                <div class="modal-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                        Скопируйте ячейки из таблицы (Excel/Word) и вставьте сюда.
+                    </p>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label>Вставляемые столбцы (по порядку слева направо)</label>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+                            <label class="day-cb"><input type="checkbox" id="colSectionCb" checked> Раздел</label>
+                            <label class="day-cb"><input type="checkbox" id="colTopicCb" checked disabled> Тема
+                                (обязательно)</label>
+                            <label class="day-cb"><input type="checkbox" id="colHwCb" checked> Д/З</label>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Дата</label>
-                        <input type="date" id="topicDateInput" class="form-control">
+                        <textarea id="excelPasteArea" class="form-control" rows="10"
+                            placeholder="Алгебра    Квадратный корень    Стр. 25, №1-5..."></textarea>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Раздел</label>
-                    <input type="text" id="topicSectionInput" class="form-control"
-                        placeholder="Например: Алгебраические выражения">
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelPasteExcelModal">Отмена</button>
+                    <button class="btn btn-primary" id="savePasteExcelBtn">Конвертировать</button>
                 </div>
-                <div class="form-group">
-                    <label>Название темы</label>
-                    <input type="text" id="topicNameInput" class="form-control" placeholder="Введите название...">
-                </div>
-                <div class="form-group">
-                    <label>Домашнее задание</label>
-                    <textarea id="topicHwInput" class="form-control" rows="2"
-                        placeholder="Домашнее задание..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка (если есть)</label>
-                    <input type="url" id="topicLinkInput" class="form-control" placeholder="https://...">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelTopicModal">Отмена</button>
-                <button class="btn btn-primary" id="saveTopicBtn">Сохранить</button>
             </div>
         </div>
-    </div>
 
-    <script src="app.js?v=9"></script>
+        <!-- Subject Modal -->
+        <div class="modal" id="subjectModal">
+            <div class="modal-content" style="max-width: 550px;">
+                <div class="modal-header">
+                    <h2 id="subjectModalTitle">Добавить предмет</h2>
+                    <button class="btn-close" id="closeSubjectModal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label>Название предмета</label>
+                            <input type="text" id="subjNameInput" class="form-control"
+                                placeholder="Например: Математика">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Класс</label>
+                            <input type="text" id="subjClassInput" class="form-control" placeholder="Например: 11А">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата начала</label>
+                            <input type="date" id="subjStartInput" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Дата окончания</label>
+                            <input type="date" id="subjEndInput" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 8px;">
+                        <label>Дни проведения занятий</label>
+                        <div class="days-container" id="daysContainer"
+                            style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <label class="day-cb"><input type="checkbox" data-day="понедельник"> Пн</label>
+                            <label class="day-cb"><input type="checkbox" data-day="вторник"> Вт</label>
+                            <label class="day-cb"><input type="checkbox" data-day="среда"> Ср</label>
+                            <label class="day-cb"><input type="checkbox" data-day="четверг"> Чт</label>
+                            <label class="day-cb"><input type="checkbox" data-day="пятница"> Пт</label>
+                            <label class="day-cb"><input type="checkbox" data-day="суббота"> Сб</label>
+                            <label class="day-cb"><input type="checkbox" data-day="воскресенье"> Вс</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelSubjectModal">Отмена</button>
+                    <button class="btn btn-primary" id="saveSubjectBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic Modal -->
+        <div class="modal" id="topicModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="topicModalTitle">Добавить тему</h2>
+                    <button class="btn-close" id="closeTopicModal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Номер (ID)</label>
+                            <input type="number" id="topicIdInput" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Дата</label>
+                            <input type="date" id="topicDateInput" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Раздел</label>
+                        <input type="text" id="topicSectionInput" class="form-control"
+                            placeholder="Например: Алгебраические выражения">
+                    </div>
+                    <div class="form-group">
+                        <label>Название темы</label>
+                        <input type="text" id="topicNameInput" class="form-control" placeholder="Введите название...">
+                    </div>
+                    <div class="form-group">
+                        <label>Домашнее задание</label>
+                        <textarea id="topicHwInput" class="form-control" rows="2"
+                            placeholder="Домашнее задание..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ссылка (если есть)</label>
+                        <input type="url" id="topicLinkInput" class="form-control" placeholder="https://...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelTopicModal">Отмена</button>
+                    <button class="btn btn-primary" id="saveTopicBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="app.js?v=10"></script>
 </body>
 
 </html>
