@@ -183,6 +183,14 @@ body {
   display: none;
 }
 
+.empty-state.hidden {
+  display: none !important;
+}
+
+.schedule-view.hidden {
+  display: none !important;
+}
+
 .subject-header {
   display: flex;
   justify-content: space-between;
@@ -1357,4 +1365,11 @@ body {
   border-radius: 12px;
   align-self: flex-start;
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .schedule-days-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
