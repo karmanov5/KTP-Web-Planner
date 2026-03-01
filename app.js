@@ -724,6 +724,10 @@ const renderMainArea = () => {
                     // Setup Intersection Observer to hide FAB when active row is visible
                     if (btnScroll && window.IntersectionObserver) {
                         activeTopicObserver = new IntersectionObserver((entries) => {
+                            if (el.subjectView && el.subjectView.classList.contains('hidden')) {
+                                btnScroll.classList.add('hidden');
+                                return;
+                            }
                             if (entries[0].isIntersecting) {
                                 btnScroll.classList.add('hidden');
                             } else {
