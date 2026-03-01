@@ -220,7 +220,32 @@
 
     <!-- Modals -->
 
-    <!-- Holidays Modal -->
+    <!-- Schedule Subject Modal -->
+    <div class="modal" id="scheduleSubjModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 id="scheduleSubjModalTitle">Предмет расписания</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название предмета</label>
+                    <input type="text" id="schedSubjNameInput" class="form-control" list="userSubjectsPaths"
+                        placeholder="Например: Информатика">
+                    <datalist id="userSubjectsPaths">
+                        <!-- Options injected via JS -->
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Кабинет / Класс / Группа</label>
+                    <input type="text" id="schedSubjClassInput" class="form-control" placeholder="Например: 11, инд">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSchedSubjModal">Отмена</button>
+                <button class="btn btn-primary" id="saveSchedSubjBtn">Сохранить</button>
+            </div>
+        </div>
+    </div> <!-- Holidays Modal -->
     <div class="modal" id="holidaysModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -376,7 +401,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=7"></script>
 </body>
 
 </html>

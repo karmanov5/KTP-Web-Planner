@@ -560,6 +560,9 @@ window.showHolidays = () => {
 };
 
 const renderMainArea = () => {
+    // If schedule view is active, we don't render ktp subject states
+    if (el.scheduleView && !el.scheduleView.classList.contains('hidden')) return;
+
     if (!activeSubjectUid) {
         el.emptyState.classList.remove('hidden');
         el.subjectView.classList.add('hidden');
@@ -1415,18 +1418,47 @@ const switchTab = (tab) => {
             renderSchedule();
         }
     }
+
+    // Close mobile sidebar if open
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('show');
 };
 
 const loadSchedule = async () => {
     if (!el.scheduleGrid) return;
     try {
         el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><i class="ph ph-spinner ph-spin" style="font-size: 2rem;"></i><p>Загрузка расписания...</p></div>';
-        const res = await fetch('settings.json');
-        if (!res.ok) throw new Error('settings.json not found');
-        scheduleData = await res.json();
+
+        let saved = localStorage.getItem('ktp_scheduleData');
+
+        // Sometimes it can be saved as string 'undefined'
+        if (saved === 'undefined') saved = null;
+
+        if (saved) {
+            try {
+                scheduleData = JSON.parse(saved);
+            } catch (err) {
+                console.warn("Invalid local schedule data, reloading from settings.json", err);
+                saved = null;
+            }
+        }
+
+        if (!saved) {
+            const res = await fetch('settings.json');
+            if (!res.ok) throw new Error(`settings.json not found (${res.status})`);
+            scheduleData = await res.json();
+            localStorage.setItem('ktp_scheduleData', JSON.stringify(scheduleData));
+        }
         renderSchedule();
     } catch (e) {
-        el.scheduleGrid.innerHTML = '<div style="color:var(--danger); padding:16px;">Ошибка загрузки расписания. Убедитесь, что settings.xml был сохранён как settings.json.</div>';
+        console.error("Schedule Load Error:", e);
+        el.scheduleGrid.innerHTML = `<div style="color:var(--danger); padding:16px;">Ошибка загрузки расписания: ${e.message}<br>Убедитесь, что settings.xml был сохранён как settings.json.</div>`;
+    }
+};
+
+const saveSchedule = () => {
+    if (scheduleData) {
+        localStorage.setItem('ktp_scheduleData', JSON.stringify(scheduleData));
     }
 };
 
@@ -1437,38 +1469,51 @@ const renderSchedule = () => {
     // Sort days by Id (1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri)
     const days = [...scheduleData.Days].sort((a, b) => a.Id - b.Id);
 
-    days.forEach(day => {
-        if (!day.Subjects || day.Subjects.length === 0) return;
-        // Check if there's any active subject this day
-        const activeSubjects = day.Subjects.filter(s => s.Name !== "Нет" || s.ClassName !== "-");
-        if (activeSubjects.length === 0) return;
+    let currentDay = new Date().getDay();
+    if (currentDay === 0) currentDay = 7;
 
-        html += `<div class="schedule-day-card">`;
+    days.forEach(day => {
+        // Filter out empty items that are just trailing space, but we keep its index matching
+        const validSubjects = day.Subjects.map((sub, i) => ({ sub, idx: i }))
+            .filter(x => !(x.sub.Name === "Нет" && x.sub.ClassName === "-") && x.sub.ClassName !== "");
+
+        if (validSubjects.length === 0) return;
+
+        const isToday = day.Id === currentDay;
+        const cardClass = isToday ? 'schedule-day-card current-day' : 'schedule-day-card';
+
+        html += `<div class="${cardClass}">`;
         html += `<h3 class="schedule-day-title">${day.Name}</h3>`;
         html += `<ul class="schedule-subjects">`;
 
-        day.Subjects.forEach((sub, i) => {
-            const isEmpty = (sub.Name === "Нет" && sub.ClassName === "-");
-            const isNoClass = (sub.ClassName === "");
-            if (isEmpty || isNoClass) {
-                // If it's completely empty at the end of the day, we might trim it, but let's just show it light
-                html += `<li class="schedule-subject-item empty">
-                    <div class="schedule-num">${sub.Id || (i + 1)}</div>
-                    <div class="schedule-details">
-                        <div class="schedule-subname">—</div>
-                    </div>
-                </li>`;
-            } else {
-                html += `<li class="schedule-subject-item">
-                    <div class="schedule-num">${sub.Id || (i + 1)}</div>
-                    <div class="schedule-details">
-                        <div class="schedule-subname">${sub.Name}</div>
-                        ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
-                    </div>
-                </li>`;
-            }
+        validSubjects.forEach(({ sub, idx }) => {
+            const actionsHtml = `
+            <div class="schedule-item-actions" style="display:flex; gap:4px; opacity:0; transition:opacity 0.2s;">
+                <button class="btn btn-icon" style="width:28px; height:28px; padding:0;" onclick="editScheduleSubj(${day.Id}, ${idx})" title="Редактировать">
+                    <i class="ph ph-pencil-simple" style="font-size:0.9rem;"></i>
+                </button>
+                <button class="btn btn-icon danger" style="width:28px; height:28px; padding:0;" onclick="deleteScheduleSubj(${day.Id}, ${idx})" title="Удалить">
+                    <i class="ph ph-x" style="font-size:0.9rem;"></i>
+                </button>
+            </div>`;
+
+            html += `<li class="schedule-subject-item" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
+                <div class="schedule-num">${sub.Id || (idx + 1)}</div>
+                <div class="schedule-details" style="flex:1;">
+                    <div class="schedule-subname">${sub.Name}</div>
+                    ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
+                </div>
+                ${actionsHtml}
+            </li>`;
         });
-        html += `</ul></div>`;
+        html += `</ul>`;
+
+        // Add Button
+        html += `<button class="btn btn-secondary btn-full" style="margin-top: 12px; border-style: dashed; opacity: 0.6;" onclick="addScheduleSubj(${day.Id})">
+            <i class="ph ph-plus"></i> <span style="font-size: 0.85rem;">Добавить урок</span>
+        </button>`;
+
+        html += `</div>`;
     });
 
     if (!html) {
@@ -1483,4 +1528,103 @@ const renderSchedule = () => {
 // Start
 initTabs();
 init();
+
+// --- Schedule Editing Logic ---
+let editingScheduleParams = { dayId: null, subjectIndex: null };
+
+const fillUserSubjectsDataList = () => {
+    const datalist = document.getElementById('userSubjectsPaths');
+    if (!datalist) return;
+    datalist.innerHTML = '';
+    const userSubjects = (scheduleData && scheduleData.UserSubjects) ? scheduleData.UserSubjects : [];
+    userSubjects.forEach(s => {
+        if (s && s !== 'Нет') {
+            const opt = document.createElement('option');
+            opt.value = s;
+            datalist.appendChild(opt);
+        }
+    });
+};
+
+window.addScheduleSubj = (dayId) => {
+    editingScheduleParams = { dayId, subjectIndex: null };
+    document.getElementById('scheduleSubjModalTitle').innerText = 'Добавить предмет';
+    document.getElementById('schedSubjNameInput').value = '';
+    document.getElementById('schedSubjClassInput').value = '';
+    fillUserSubjectsDataList();
+    showModal('scheduleSubjModal');
+};
+
+window.editScheduleSubj = (dayId, subjIndex) => {
+    editingScheduleParams = { dayId, subjectIndex: subjIndex };
+    document.getElementById('scheduleSubjModalTitle').innerText = 'Редактировать предмет';
+
+    const day = scheduleData.Days.find(d => d.Id === dayId);
+    if (day && day.Subjects[subjIndex]) {
+        const sub = day.Subjects[subjIndex];
+        document.getElementById('schedSubjNameInput').value = sub.Name !== 'Нет' ? sub.Name : '';
+        document.getElementById('schedSubjClassInput').value = sub.ClassName !== '-' ? sub.ClassName : '';
+    }
+    fillUserSubjectsDataList();
+    showModal('scheduleSubjModal');
+};
+
+window.deleteScheduleSubj = (dayId, subjIndex) => {
+    if (confirm("Удалить этот предмет из расписания?")) {
+        const day = scheduleData.Days.find(d => d.Id === dayId);
+        if (day && day.Subjects) {
+            day.Subjects.splice(subjIndex, 1);
+            // Re-index Id just to be safe
+            day.Subjects.forEach((s, idx) => s.Id = idx + 1);
+            saveSchedule();
+            renderSchedule();
+        }
+    }
+};
+
+document.getElementById('cancelSchedSubjModal')?.addEventListener('click', () => {
+    hideModal('scheduleSubjModal');
+});
+
+document.getElementById('saveSchedSubjBtn')?.addEventListener('click', () => {
+    let nameVal = document.getElementById('schedSubjNameInput').value.trim() || 'Нет';
+    let classVal = document.getElementById('schedSubjClassInput').value.trim() || '-';
+
+    // Fallback normalization
+    if (!nameVal) nameVal = 'Нет';
+    if (!classVal) classVal = '-';
+
+    if (nameVal !== 'Нет' && scheduleData && scheduleData.UserSubjects) {
+        if (!scheduleData.UserSubjects.includes(nameVal)) {
+            scheduleData.UserSubjects.push(nameVal);
+        }
+    }
+
+    const { dayId, subjectIndex } = editingScheduleParams;
+    const day = scheduleData.Days.find(d => d.Id === dayId);
+
+    if (day) {
+        if (!day.Subjects) day.Subjects = [];
+        if (subjectIndex !== null) {
+            // Edit
+            day.Subjects[subjectIndex].Name = nameVal;
+            day.Subjects[subjectIndex].ClassName = classVal;
+        } else {
+            // Add
+            const newId = day.Subjects.length > 0 ? day.Subjects[day.Subjects.length - 1].Id + 1 : 1;
+            day.Subjects.push({
+                Id: newId,
+                Name: nameVal,
+                ClassName: classVal,
+                TeacherName: "-",
+                IsVisibleClassName: true,
+                IsVisibleTeacherName: false,
+                Description: ""
+            });
+        }
+        saveSchedule();
+        renderSchedule();
+        hideModal('scheduleSubjModal');
+    }
+});
 
