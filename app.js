@@ -1473,11 +1473,7 @@ const renderSchedule = () => {
     if (currentDay === 0) currentDay = 7;
 
     days.forEach(day => {
-        // Filter out empty items that are just trailing space, but we keep its index matching
-        const validSubjects = day.Subjects.map((sub, i) => ({ sub, idx: i }))
-            .filter(x => !(x.sub.Name === "Нет" && x.sub.ClassName === "-") && x.sub.ClassName !== "");
-
-        if (validSubjects.length === 0) return;
+        if (!day.Subjects || day.Subjects.length === 0) return;
 
         const isToday = day.Id === currentDay;
         const cardClass = isToday ? 'schedule-day-card current-day' : 'schedule-day-card';
@@ -1486,25 +1482,37 @@ const renderSchedule = () => {
         html += `<h3 class="schedule-day-title">${day.Name}</h3>`;
         html += `<ul class="schedule-subjects">`;
 
-        validSubjects.forEach(({ sub, idx }) => {
+        day.Subjects.forEach((sub, idx) => {
+            const isEmpty = (sub.Name === "Нет" && sub.ClassName === "-") || sub.ClassName === "";
+
             const actionsHtml = `
             <div class="schedule-item-actions" style="display:flex; gap:4px; opacity:0; transition:opacity 0.2s;">
-                <button class="btn btn-icon" style="width:28px; height:28px; padding:0;" onclick="editScheduleSubj(${day.Id}, ${idx})" title="Редактировать">
-                    <i class="ph ph-pencil-simple" style="font-size:0.9rem;"></i>
+                <button class="btn btn-icon" style="width:32px; height:32px; padding:0; justify-content:center;" onclick="editScheduleSubj(${day.Id}, ${idx})" title="Редактировать">
+                    <i class="ph ph-pencil-simple" style="font-size:1.1rem;"></i>
                 </button>
-                <button class="btn btn-icon danger" style="width:28px; height:28px; padding:0;" onclick="deleteScheduleSubj(${day.Id}, ${idx})" title="Удалить">
-                    <i class="ph ph-x" style="font-size:0.9rem;"></i>
+                <button class="btn btn-icon danger" style="width:32px; height:32px; padding:0; justify-content:center;" onclick="deleteScheduleSubj(${day.Id}, ${idx})" title="Удалить">
+                    <i class="ph ph-x" style="font-size:1.1rem;"></i>
                 </button>
             </div>`;
 
-            html += `<li class="schedule-subject-item" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
-                <div class="schedule-num">${sub.Id || (idx + 1)}</div>
-                <div class="schedule-details" style="flex:1;">
-                    <div class="schedule-subname">${sub.Name}</div>
-                    ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
-                </div>
-                ${actionsHtml}
-            </li>`;
+            if (isEmpty) {
+                html += `<li class="schedule-subject-item empty" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
+                    <div class="schedule-num">${sub.Id || (idx + 1)}</div>
+                    <div class="schedule-details" style="flex:1;">
+                        <div class="schedule-subname">—</div>
+                    </div>
+                    ${actionsHtml}
+                </li>`;
+            } else {
+                html += `<li class="schedule-subject-item" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
+                    <div class="schedule-num">${sub.Id || (idx + 1)}</div>
+                    <div class="schedule-details" style="flex:1;">
+                        <div class="schedule-subname">${sub.Name}</div>
+                        ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
+                    </div>
+                    ${actionsHtml}
+                </li>`;
+            }
         });
         html += `</ul>`;
 
