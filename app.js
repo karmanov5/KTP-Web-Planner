@@ -1409,6 +1409,7 @@ const switchTab = (tab) => {
         el.subjectView?.classList.add('hidden');
         el.emptyState?.classList.add('hidden');
         document.getElementById('mobileSubjectBanner')?.classList.add('hidden');
+        document.getElementById('scrollToActiveBtn')?.classList.add('hidden');
 
         el.scheduleView?.classList.remove('hidden');
 
@@ -1578,15 +1579,13 @@ window.editScheduleSubj = (dayId, subjIndex) => {
 };
 
 window.deleteScheduleSubj = (dayId, subjIndex) => {
-    if (confirm("Удалить этот предмет из расписания?")) {
-        const day = scheduleData.Days.find(d => d.Id === dayId);
-        if (day && day.Subjects) {
-            day.Subjects.splice(subjIndex, 1);
-            // Re-index Id just to be safe
-            day.Subjects.forEach((s, idx) => s.Id = idx + 1);
-            saveSchedule();
-            renderSchedule();
-        }
+    const day = scheduleData.Days.find(d => d.Id === dayId);
+    if (day && day.Subjects) {
+        day.Subjects.splice(subjIndex, 1);
+        // Re-index Id just to be safe
+        day.Subjects.forEach((s, idx) => s.Id = idx + 1);
+        saveSchedule();
+        renderSchedule();
     }
 };
 
