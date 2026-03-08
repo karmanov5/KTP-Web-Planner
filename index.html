@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KTP Web App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=4">
-    <!-- Phosphor Icons for elegant UI icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 
 <body>
@@ -16,32 +17,33 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-card">
             <div class="login-logo">
-                <i class="ph-fill ph-calendar-check"></i>
+                <span class="material-symbols-outlined"
+                    style="font-size: 40px; color: var(--accent-primary);">edit_square</span>
             </div>
             <h1 class="login-title">KTP Web Planner</h1>
             <p class="login-subtitle">Введите данные для входа</p>
 
             <form class="login-form" id="loginForm" autocomplete="on">
                 <div class="login-field">
-                    <i class="ph ph-user login-field-icon"></i>
+                    <span class="material-symbols-outlined login-field-icon">person</span>
                     <input class="login-input" type="text" id="loginUsername" name="username" placeholder="Логин"
                         autocomplete="username" autofocus>
                 </div>
                 <div class="login-field">
-                    <i class="ph ph-lock login-field-icon"></i>
+                    <span class="material-symbols-outlined login-field-icon">lock</span>
                     <input class="login-input" type="password" id="loginPassword" name="password" placeholder="Пароль"
                         autocomplete="current-password">
                     <button type="button" class="login-eye-btn" id="loginEyeBtn" tabindex="-1">
-                        <i class="ph ph-eye" id="loginEyeIcon"></i>
+                        <span class="material-symbols-outlined" id="loginEyeIcon">visibility</span>
                     </button>
                 </div>
                 <div class="login-error hidden" id="loginError">
-                    <i class="ph ph-warning-circle"></i>
+                    <span class="material-symbols-outlined">warning</span>
                     <span id="loginErrorText">Неверный логин или пароль</span>
                 </div>
                 <button type="submit" class="login-btn" id="loginSubmitBtn">
                     <span id="loginBtnText">Войти</span>
-                    <i class="ph ph-arrow-right"></i>
+                    <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </form>
         </div>
@@ -50,10 +52,11 @@
     <div class="app-container" id="appContainer" style="visibility:hidden">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar glass" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="ph-fill ph-calendar-check"></i>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 28px; color: var(--accent-primary);">edit_square</span>
                     <span>KTP Web Planner</span>
                 </div>
             </div>
@@ -66,12 +69,12 @@
 
             <div class="sidebar-actions">
                 <button id="addSubjectBtn" class="btn btn-primary btn-full">
-                    <i class="ph ph-plus"></i>
+                    <span class="material-symbols-outlined">add</span>
                     Новый предмет
                 </button>
                 <button id="holidaysBtn" onclick="showHolidays()" class="btn btn-secondary btn-full"
                     style="margin-top: 8px;">
-                    <i class="ph ph-calendar-x"></i>
+                    <span class="material-symbols-outlined">event_busy</span>
                     Каникулы
                 </button>
             </div>
@@ -87,29 +90,29 @@
                 <!-- Yandex Disk Status -->
                 <div id="yandexStatusBadge"
                     style="display:flex; align-items:center; gap:6px; padding: 8px 4px; color: var(--text-muted); font-size: 0.8rem; margin-bottom:8px; min-height: 28px;">
-                    <i class="ph ph-cloud" style="color:var(--text-muted)"></i>
+                    <span class="material-symbols-outlined" style="font-size: 18px;">cloud</span>
                     <span style="font-size:0.75rem;">Проверка Яндекс Диска...</span>
                 </div>
                 <div class="action-buttons">
                     <label class="btn btn-secondary tooltip" data-tooltip="Загрузить из ktp.json">
-                        <i class="ph ph-upload-simple"></i>
+                        <span class="material-symbols-outlined">upload</span>
                         <span>Загрузить</span>
                         <input type="file" id="loadJsonInput" accept=".json" hidden>
                     </label>
                     <button class="btn btn-secondary tooltip" id="saveJsonBtn" data-tooltip="Скачать ktp.json локально">
-                        <i class="ph ph-download-simple"></i>
+                        <span class="material-symbols-outlined">download</span>
                         <span>Скачать</span>
                     </button>
                 </div>
                 <button class="btn btn-primary btn-full" id="saveYandexBtn" onclick="saveToYandex()"
                     style="margin-top: 8px; display:none;" title="Сохранить на Яндекс Диск">
-                    <i class="ph ph-cloud-arrow-up"></i>
+                    <span class="material-symbols-outlined">cloud_upload</span>
                     <span>Сохранить в облако</span>
                 </button>
                 <button class="btn btn-secondary btn-full" id="loadYandexBtn"
                     onclick="loadFromYandex().then(ok => { if(ok){initAfterLoad();}})"
                     style="margin-top: 4px; display:none;" title="Перезагрузить с Яндекс Диска">
-                    <i class="ph ph-cloud-arrow-down"></i>
+                    <span class="material-symbols-outlined">cloud_download</span>
                     <span>Загрузить из облака</span>
                 </button>
             </div>
@@ -119,18 +122,18 @@
         <main class="main-content" id="mainContent">
             <div class="mobile-topbar" id="mobileTopbar">
                 <div class="logo">
-                    <i class="ph-fill ph-calendar-check"></i>
+                    <span class="material-symbols-outlined" style="color: var(--accent-primary);">edit_square</span>
                     <span>KTP Web Planner</span>
                 </div>
                 <button class="btn btn-icon" id="mobileMenuBtn">
-                    <i class="ph ph-list"></i>
+                    <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
 
             <!-- Mobile sticky subject info banner -->
             <div class="mobile-subject-banner hidden" id="mobileSubjectBanner">
                 <div class="mobile-subject-banner-info">
-                    <i class="ph ph-book-open"></i>
+                    <span class="material-symbols-outlined">book</span>
                     <div>
                         <div class="mobile-subject-banner-name" id="mobileSubjectName">—</div>
                         <div class="mobile-subject-banner-count" id="mobileSubjectCount"></div>
@@ -140,7 +143,7 @@
 
             <div class="empty-state" id="emptyState">
                 <div class="empty-icon">
-                    <i class="ph ph-books"></i>
+                    <span class="material-symbols-outlined" style="font-size: 64px;">library_books</span>
                 </div>
                 <h2>Выберите предмет</h2>
                 <p>Или создайте новый для начала работы с календарно-тематическим планом.</p>
@@ -151,24 +154,26 @@
                     <div class="subject-info">
                         <h1 id="subjectNameHeader">Название предмета</h1>
                         <div class="subject-meta">
-                            <span class="badge" id="subjectClassBadge"><i class="ph ph-student"></i> 11А</span>
-                            <span class="meta-item" id="subjectDates"><i class="ph ph-calendar"></i> 01.09.2023 -
+                            <span class="badge" id="subjectClassBadge"><span class="material-symbols-outlined"
+                                    style="font-size: 16px;">school</span> 11А</span>
+                            <span class="meta-item" id="subjectDates"><span class="material-symbols-outlined"
+                                    style="font-size: 16px;">calendar_month</span> 01.09.2023 -
                                 30.05.2024</span>
                         </div>
                     </div>
                     <div class="subject-actions">
-                        <button class="btn btn-icon tooltip" id="pasteExcelBtn" data-tooltip="Вставить темы из Excel">
-                            <i class="ph ph-table"></i>
+                        <button class="btn btn-icon tooltip" id="pasteExcelBtn" data-tooltip="Вставить из Excel">
+                            <span class="material-symbols-outlined">table_chart</span>
                         </button>
-                        <button class="btn btn-icon tooltip" id="autoDateBtn" data-tooltip="Авто-распределение дат">
-                            <i class="ph ph-magic-wand"></i>
+                        <button class="btn btn-icon tooltip" id="autoDateBtn" data-tooltip="Авто-даты">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
                         </button>
-                        <button class="btn btn-icon tooltip" id="editSubjectBtn" data-tooltip="Редактировать предмет">
-                            <i class="ph ph-pencil-simple"></i>
+                        <button class="btn btn-icon tooltip" id="editSubjectBtn" data-tooltip="Изменить предмет">
+                            <span class="material-symbols-outlined">edit</span>
                         </button>
                         <button class="btn btn-icon danger tooltip" id="deleteSubjectBtn"
                             data-tooltip="Удалить предмет">
-                            <i class="ph ph-trash"></i>
+                            <span class="material-symbols-outlined">delete</span>
                         </button>
                     </div>
                 </header>
@@ -178,7 +183,7 @@
                         <h3>Темы занятий</h3>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-sm btn-primary" id="addTopicBtn">
-                                <i class="ph ph-plus"></i> Добавить тему
+                                <span class="material-symbols-outlined">add</span> Добавить тему
                             </button>
                         </div>
                     </div>
@@ -212,9 +217,9 @@
             </div> <!-- schedule-view -->
         </main>
 
-        <button class="btn fab-btn hidden" id="scrollToActiveBtn" title="Ближайшая тема">
-            <i class="ph ph-target"></i>
-            <span style="font-size:0.85rem;">Ближайшая</span>
+        <button class="btn fab-btn hidden" id="scrollToActiveBtn" title="Ближайший урок">
+            <span class="material-symbols-outlined">gps_fixed</span>
+            <span style="font-size:0.85rem;">Ближайший</span>
         </button>
     </div> <!-- app-container -->
 
@@ -298,7 +303,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Настройка каникул</h2>
-                <button class="btn-close" id="closeHolidaysModal"><i class="ph ph-x"></i></button>
+                <button class="btn-close" id="closeHolidaysModal"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div class="modal-body">
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
@@ -329,8 +335,9 @@
     <div class="modal" id="pasteExcelModal">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <h2>Вставка тем из Excel</h2>
-                <button class="btn-close" id="closePasteExcelModal"><i class="ph ph-x"></i></button>
+                <h2>Paste from Excel</h2>
+                <button class="btn-close" id="closePasteExcelModal"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div class="modal-body">
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
@@ -361,8 +368,9 @@
     <div class="modal" id="subjectModal">
         <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
-                <h2 id="subjectModalTitle">Добавить предмет</h2>
-                <button class="btn-close" id="closeSubjectModal"><i class="ph ph-x"></i></button>
+                <h2 id="subjectModalTitle">Новый предмет</h2>
+                <button class="btn-close" id="closeSubjectModal"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-row">
@@ -410,7 +418,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="topicModalTitle">Добавить тему</h2>
-                <button class="btn-close" id="closeTopicModal"><i class="ph ph-x"></i></button>
+                <button class="btn-close" id="closeTopicModal"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-row">
@@ -449,7 +458,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=12"></script>
+    <script src="app.js?v=17"></script>
 </body>
 
 </html>

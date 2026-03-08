@@ -56,7 +56,7 @@ const doLogout = async () => {
     eyeBtn?.addEventListener('click', () => {
         const isText = pwdInput.type === 'text';
         pwdInput.type = isText ? 'password' : 'text';
-        eyeIcon.className = isText ? 'ph ph-eye' : 'ph ph-eye-slash';
+        eyeIcon.textContent = isText ? 'visibility' : 'visibility_off';
     });
 
     // Form submit
@@ -71,7 +71,8 @@ const doLogout = async () => {
         errorBox.classList.add('hidden');
         submitBtn.disabled = true;
         btnText.textContent = 'Вход...';
-        submitBtn.querySelector('i').className = 'ph ph-spinner';
+        submitBtn.querySelector('.material-symbols-outlined').textContent = 'sync';
+        submitBtn.querySelector('.material-symbols-outlined').classList.add('spin-animation');
 
         const login = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -88,7 +89,8 @@ const doLogout = async () => {
                 authToken = data.token;
                 localStorage.setItem('ktp_auth_token', authToken);
                 btnText.textContent = 'Добро пожаловать!';
-                submitBtn.querySelector('i').className = 'ph ph-check';
+                submitBtn.querySelector('.material-symbols-outlined').textContent = 'check_circle';
+                submitBtn.querySelector('.material-symbols-outlined').classList.remove('spin-animation');
                 submitBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
                 setTimeout(() => showApp(), 400);
             } else {
@@ -103,7 +105,8 @@ const doLogout = async () => {
             errorBox.style.animation = '';
             submitBtn.disabled = false;
             btnText.textContent = 'Войти';
-            submitBtn.querySelector('i').className = 'ph ph-arrow-right';
+            submitBtn.querySelector('.material-symbols-outlined').textContent = 'arrow_forward';
+            submitBtn.querySelector('.material-symbols-outlined').classList.remove('spin-animation');
         }
     });
 })();
@@ -316,7 +319,7 @@ const renderSidebar = () => {
         const li = document.createElement('li');
         li.className = `subject-item ${subject._uid === activeSubjectUid ? 'active' : ''}`;
         li.innerHTML = `
-            <i class="ph ph-book-open"></i>
+            <span class="material-symbols-outlined">book</span>
             <div style="flex:1">
                 <div style="font-size:0.9rem">${subject.Name || 'Без названия'}</div>
                 <div style="font-size:0.75rem; color: var(--text-muted)">${subject.ClassName || '-'}</div>
@@ -357,14 +360,14 @@ const showToast = (message, type = 'info') => {
     }
     const toast = document.createElement('div');
     const colors = { info: '#3B82F6', success: '#22c55e', error: '#EF4444', loading: '#f97316' };
-    const icons = { info: 'ph-info', success: 'ph-check-circle', error: 'ph-x-circle', loading: 'ph-spinner' };
+    const icons = { info: 'info', success: 'check_circle', error: 'error', loading: 'sync' };
     toast.style.cssText = `
         background: #1E293B; border: 1px solid rgba(255,255,255,0.12); color: #F8FAFC;
         padding: 10px 18px; border-radius: 10px; font-size: 0.875rem; display: flex; align-items: center; gap: 8px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: opacity 0.3s; opacity: 1;
         border-left: 3px solid ${colors[type] || colors.info};
     `;
-    toast.innerHTML = `<i class="ph ${icons[type] || 'ph-info'}" style="color:${colors[type]}; font-size:1.1rem;${type === 'loading' ? ' animation: spin 1s linear infinite;' : ''}"></i> ${message}`;
+    toast.innerHTML = `<span class="material-symbols-outlined ${type === 'loading' ? 'spin-animation' : ''}" style="color:${colors[type]}; font-size:1.25rem;">${icons[type] || 'info'}</span> ${message}`;
     toaster.appendChild(toast);
     if (type !== 'loading') {
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3500);
@@ -402,10 +405,10 @@ const updateYandexStatusBadge = (connected, user) => {
     const loadBtn = document.getElementById('loadYandexBtn');
     if (badge) {
         if (connected) {
-            badge.innerHTML = `<i class="ph ph-cloud-check" style="color:#22c55e"></i> <span style="font-size:0.75rem; color:#22c55e">${user}</span>`;
+            badge.innerHTML = `<span class="material-symbols-outlined" style="color:#22c55e; font-size: 18px;">cloud_done</span> <span style="font-size:0.75rem; color:#22c55e">${user}</span>`;
             badge.title = 'Яндекс Диск подключён';
         } else {
-            badge.innerHTML = `<i class="ph ph-cloud-slash" style="color:#EF4444"></i> <span style="font-size:0.75rem; color:#EF4444">Нет соединения</span>`;
+            badge.innerHTML = `<span class="material-symbols-outlined" style="color:#EF4444; font-size: 18px;">cloud_off</span> <span style="font-size:0.75rem; color:#EF4444">Нет соединения</span>`;
             badge.title = 'Яндекс Диск недоступен';
         }
     }
@@ -580,8 +583,8 @@ const renderMainArea = () => {
     const className = subject.ClassName || '';
 
     el.subjectNameHeader.innerText = subjectName;
-    el.subjectClassBadge.innerHTML = `<i class="ph ph-student"></i> ${className || '-'}`;
-    el.subjectDates.innerHTML = `<i class="ph ph-calendar"></i> ${formatDate(subject.StartDate)} - ${formatDate(subject.EndDate)}`;
+    el.subjectClassBadge.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">school</span> ${className || '-'}`;
+    el.subjectDates.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">calendar_month</span> ${formatDate(subject.StartDate)} - ${formatDate(subject.EndDate)}`;
 
     // Ensure ShownTopics exists to draw data
     if (!subject.ShownTopics && subject.Topics) {
@@ -599,7 +602,7 @@ const renderMainArea = () => {
     if (banner && bannerName && bannerCount) {
         bannerName.textContent = className ? `${subjectName} · ${className}` : subjectName;
         const topicCount = topics.length;
-        bannerCount.innerHTML = `<i class="ph ph-clock" style="font-size:0.8rem"></i> ${topicCount} ${declOfNum(topicCount, ['час', 'часа', 'часов'])}`;
+        bannerCount.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">schedule</span> ${topicCount} ${declOfNum(topicCount, ['час', 'часа', 'часов'])}`;
         banner.classList.remove('hidden');
     }
 
@@ -657,7 +660,7 @@ const renderMainArea = () => {
                 if (topic.Link) {
                     const urlMatch = topic.Link.match(/https?:\/\/[^\s]+/);
                     const hrefUrl = urlMatch ? urlMatch[0] : topic.Link;
-                    linkHtml = `<a href="${hrefUrl}" target="_blank" class="topic-link tooltip" data-tooltip="Открыть"><i class="ph ph-link"></i></a>`;
+                    linkHtml = `<a href="${hrefUrl}" target="_blank" class="topic-link tooltip" data-tooltip="Открыть"><span class="material-symbols-outlined" style="font-size: 18px;">link</span></a>`;
                 }
 
                 const hwText = topic.HomeWork || topic.homeWork || topic.homework;
@@ -673,7 +676,7 @@ const renderMainArea = () => {
 
                 const copyBtnHtml = hwText ? `
                     <button class="btn btn-icon" onclick="copyHw(this)" data-hw="${escTooltip}" data-tooltip="Копировать Д/З">
-                        <i class="ph ph-copy"></i>
+                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
                     </button>
                 ` : '';
 
@@ -689,10 +692,10 @@ const renderMainArea = () => {
                             ${linkHtml}
                             ${copyBtnHtml}
                             <button class="btn btn-icon" onclick="editTopic('${topic._uid}')" data-tooltip="Редактировать">
-                                <i class="ph ph-pencil-simple"></i>
+                                <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                             </button>
                             <button class="btn btn-icon danger" onclick="deleteTopic('${topic._uid}')" data-tooltip="Удалить">
-                                <i class="ph ph-trash"></i>
+                                <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                             </button>
                         </div>
                     </td>
@@ -916,10 +919,10 @@ const renderHolidays = () => {
 
         badge.innerHTML = `
             <span style="display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="editHolidayRange('${range.startStr}', '${range.endStr}')" title="Нажмите, чтобы изменить">
-               <i class="ph ph-calendar-x"></i> 
+               <span class="material-symbols-outlined">event_busy</span> 
                <span style="text-decoration: underline dotted rgba(239, 68, 68, 0.5);">${displayStr}</span>
             </span>
-            <i class="ph ph-x" style="cursor: pointer; font-size: 1rem; padding:2px;" onclick="removeHolidayRange('${range.startStr}', '${range.endStr}')" title="Удалить"></i>
+            <span class="material-symbols-outlined" style="cursor: pointer; font-size: 1rem; padding:2px;" onclick="removeHolidayRange('${range.startStr}', '${range.endStr}')" title="Delete">close</span>
         `;
         el.holidaysList.appendChild(badge);
     });
@@ -1265,12 +1268,12 @@ window.copyHw = (btn) => {
     const text = btn.dataset.hw;
     if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
-        const icon = btn.querySelector('i');
+        const icon = btn.querySelector('.material-symbols-outlined');
         if (icon) {
-            icon.className = 'ph ph-check';
+            icon.textContent = 'check';
             icon.style.color = 'var(--accent-primary)';
             setTimeout(() => {
-                icon.className = 'ph ph-copy';
+                icon.textContent = 'content_copy';
                 icon.style.color = '';
             }, 1500);
         }
@@ -1432,7 +1435,7 @@ const switchTab = (tab) => {
 const loadSchedule = async () => {
     if (!el.scheduleGrid) return;
     try {
-        el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><i class="ph ph-spinner ph-spin" style="font-size: 2rem;"></i><p>Загрузка расписания...</p></div>';
+        el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><span class="material-symbols-outlined spin-animation" style="font-size: 2rem;">sync</span><p>Загрузка расписания...</p></div>';
 
         let saved = localStorage.getItem('ktp_scheduleData');
 
@@ -1493,10 +1496,10 @@ const renderSchedule = () => {
             const actionsHtml = `
             <div class="schedule-item-actions" style="display:flex; gap:4px; opacity:0; transition:opacity 0.2s;">
                 <button class="btn btn-icon" style="width:32px; height:32px; padding:0; justify-content:center;" onclick="editScheduleSubj(${day.Id}, ${idx})" title="Редактировать">
-                    <i class="ph ph-pencil-simple" style="font-size:1.1rem;"></i>
+                    <span class="material-symbols-outlined" style="font-size:1.1rem;">edit</span>
                 </button>
                 <button class="btn btn-icon danger" style="width:32px; height:32px; padding:0; justify-content:center;" onclick="deleteScheduleSubj(${day.Id}, ${idx})" title="Удалить">
-                    <i class="ph ph-x" style="font-size:1.1rem;"></i>
+                    <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
                 </button>
             </div>`;
 
@@ -1523,7 +1526,7 @@ const renderSchedule = () => {
 
         // Add Button
         html += `<button class="btn btn-secondary btn-full" style="margin-top: 12px; border-style: dashed; opacity: 0.6;" onclick="addScheduleSubj(${day.Id})">
-            <i class="ph ph-plus"></i> <span style="font-size: 0.85rem;">Добавить урок</span>
+            <span class="material-symbols-outlined">add</span> <span style="font-size: 0.85rem;">Add Lesson</span>
         </button>`;
 
         html += `</div>`;
