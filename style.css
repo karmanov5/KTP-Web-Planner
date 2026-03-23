@@ -1373,6 +1373,17 @@ body {
   background: var(--bg-tertiary);
   border-radius: 8px;
   border: 1px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.schedule-subject-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.schedule-subject-item.drag-over {
+  border: 2px dashed var(--accent-primary);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .schedule-subject-item.empty {

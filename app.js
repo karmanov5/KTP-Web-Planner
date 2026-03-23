@@ -1437,37 +1437,95 @@ const loadSchedule = async () => {
     try {
         el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><span class="material-symbols-outlined spin-animation" style="font-size: 2rem;">sync</span><p>Загрузка расписания...</p></div>';
 
-        let saved = localStorage.getItem('ktp_scheduleData');
+        const token = localStorage.getItem('ktp_token');
+        const res = await fetch('/api/schedule', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        
+        let data = await res.json();
 
-        // Sometimes it can be saved as string 'undefined'
-        if (saved === 'undefined') saved = null;
-
-        if (saved) {
-            try {
-                scheduleData = JSON.parse(saved);
-            } catch (err) {
-                console.warn("Invalid local schedule data, reloading from settings.json", err);
-                saved = null;
-            }
+        // Migrate from localStorage if server has no data
+        if ((!data.Days || data.Days.length === 0) && localStorage.getItem('ktp_scheduleData')) {
+            try { 
+                const lsData = JSON.parse(localStorage.getItem('ktp_scheduleData')); 
+                if (lsData.Days && lsData.Days.length > 0) {
+                    data = lsData;
+                    scheduleData = data;
+                    setTimeout(saveSchedule, 100);
+                }
+            } catch(e) {}
         }
 
-        if (!saved) {
-            const res = await fetch('settings.json');
-            if (!res.ok) throw new Error(`settings.json not found (${res.status})`);
-            scheduleData = await res.json();
-            localStorage.setItem('ktp_scheduleData', JSON.stringify(scheduleData));
-        }
+        scheduleData = data;
         renderSchedule();
     } catch (e) {
         console.error("Schedule Load Error:", e);
-        el.scheduleGrid.innerHTML = `<div style="color:var(--danger); padding:16px;">Ошибка загрузки расписания: ${e.message}<br>Убедитесь, что settings.xml был сохранён как settings.json.</div>`;
+        el.scheduleGrid.innerHTML = `<div style="color:var(--danger); padding:16px;">Ошибка загрузки расписания: ${e.message}</div>`;
     }
 };
 
-const saveSchedule = () => {
+const saveSchedule = async () => {
     if (scheduleData) {
         localStorage.setItem('ktp_scheduleData', JSON.stringify(scheduleData));
+        try {
+            const token = localStorage.getItem('ktp_token');
+            const res = await fetch('/api/schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(scheduleData)
+            });
+            if (!res.ok) showToast("Ошибка сохранения расписания на сервере", false);
+        } catch (e) {
+            console.error("Schedule save error:", e);
+            showToast("Ошибка сети", false);
+        }
     }
+};
+
+let scheduleDraggedItem = null;
+
+window.scheduleDragStart = (e) => {
+    scheduleDraggedItem = e.target.closest('.schedule-subject-item');
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => scheduleDraggedItem.classList.add('dragging'), 0);
+};
+
+window.scheduleDragOver = (e) => {
+    e.preventDefault();
+    const item = e.target.closest('.schedule-subject-item');
+    if (item && item !== scheduleDraggedItem) {
+        item.classList.add('drag-over');
+    }
+    e.dataTransfer.dropEffect = 'move';
+};
+
+window.scheduleDragLeave = (e) => {
+    const item = e.target.closest('.schedule-subject-item');
+    if (item) item.classList.remove('drag-over');
+};
+
+window.scheduleDrop = (e) => {
+    e.preventDefault();
+    const item = e.target.closest('.schedule-subject-item');
+    if (item) item.classList.remove('drag-over');
+    
+    if (scheduleDraggedItem && item && scheduleDraggedItem !== item) {
+        const fromDay = parseInt(scheduleDraggedItem.dataset.day);
+        const fromIdx = parseInt(scheduleDraggedItem.dataset.index);
+        const toDay = parseInt(item.dataset.day);
+        const toIdx = parseInt(item.dataset.index);
+
+        const fDay = scheduleData.Days.find(d => d.Id === fromDay);
+        const tDay = scheduleData.Days.find(d => d.Id === toDay);
+
+        if (fDay && tDay) {
+            const moved = fDay.Subjects.splice(fromIdx, 1)[0];
+            tDay.Subjects.splice(toIdx, 0, moved);
+            saveSchedule();
+            renderSchedule();
+        }
+    }
+    if (scheduleDraggedItem) scheduleDraggedItem.classList.remove('dragging');
+    scheduleDraggedItem = null;
 };
 
 const renderSchedule = () => {
@@ -1503,24 +1561,16 @@ const renderSchedule = () => {
                 </button>
             </div>`;
 
-            if (isEmpty) {
-                html += `<li class="schedule-subject-item empty" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
-                    <div class="schedule-num">${sub.Id || (idx + 1)}</div>
-                    <div class="schedule-details" style="flex:1;">
-                        <div class="schedule-subname">—</div>
-                    </div>
-                    ${actionsHtml}
-                </li>`;
-            } else {
-                html += `<li class="schedule-subject-item" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
-                    <div class="schedule-num">${sub.Id || (idx + 1)}</div>
-                    <div class="schedule-details" style="flex:1;">
-                        <div class="schedule-subname">${sub.Name}</div>
-                        ${sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
-                    </div>
-                    ${actionsHtml}
-                </li>`;
-            }
+            const itemClass = isEmpty ? 'schedule-subject-item empty' : 'schedule-subject-item';
+            html += `<li class="${itemClass}" draggable="true" data-day="${day.Id}" data-index="${idx}" ondragstart="scheduleDragStart(event)" ondragover="scheduleDragOver(event)" ondragleave="scheduleDragLeave(event)" ondrop="scheduleDrop(event)" ondragenter="event.preventDefault()" onmouseenter="this.querySelector('.schedule-item-actions').style.opacity='1'" onmouseleave="this.querySelector('.schedule-item-actions').style.opacity='0'">
+                <div class="material-symbols-outlined schedule-drag-handle" style="cursor:grab; opacity:0.3; margin-right:8px; font-size:1.2rem; display:flex; align-items:center;">drag_indicator</div>
+                <div class="schedule-num">${sub.Id || (idx + 1)}</div>
+                <div class="schedule-details" style="flex:1;">
+                    <div class="schedule-subname">${isEmpty ? '—' : sub.Name}</div>
+                    ${!isEmpty && sub.ClassName && sub.ClassName !== '-' ? `<div class="schedule-class">${sub.ClassName}</div>` : ''}
+                </div>
+                ${actionsHtml}
+            </li>`;
         });
         html += `</ul>`;
 

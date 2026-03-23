@@ -158,6 +158,36 @@ app.get('/api/yandex/status', requireAuth, async (req, res) => {
     }
 });
 
+/** GET /api/schedule — Получить расписание */
+app.get('/api/schedule', requireAuth, (req, res) => {
+    try {
+        const schedulePath = path.join(__dirname, 'schedule.json');
+        if (fs.existsSync(schedulePath)) {
+            res.json(JSON.parse(fs.readFileSync(schedulePath, 'utf8')));
+        } else {
+            const settingsPath = path.join(__dirname, 'settings.json');
+            if (fs.existsSync(settingsPath)) {
+                res.json(JSON.parse(fs.readFileSync(settingsPath, 'utf8')));
+            } else {
+                res.json({ Days: [] });
+            }
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/** POST /api/schedule — Сохранить расписание */
+app.post('/api/schedule', requireAuth, express.json(), (req, res) => {
+    try {
+        const schedulePath = path.join(__dirname, 'schedule.json');
+        fs.writeFileSync(schedulePath, JSON.stringify(req.body, null, 2));
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ─── Start ──────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
     console.log(`\n╔══════════════════════════════════════════════════╗`);
