@@ -1518,6 +1518,13 @@ window.scheduleDrop = (e) => {
         if (fDay && tDay) {
             const moved = fDay.Subjects.splice(fromIdx, 1)[0];
             tDay.Subjects.splice(toIdx, 0, moved);
+
+            // Renumber Ids sequentially after reorder
+            fDay.Subjects.forEach((s, i) => { s.Id = i + 1; });
+            if (fromDay !== toDay) {
+                tDay.Subjects.forEach((s, i) => { s.Id = i + 1; });
+            }
+
             saveSchedule();
             renderSchedule();
         }
@@ -1525,6 +1532,7 @@ window.scheduleDrop = (e) => {
     if (scheduleDraggedItem) scheduleDraggedItem.classList.remove('dragging');
     scheduleDraggedItem = null;
 };
+
 
 const renderSchedule = () => {
     if (!scheduleData || !scheduleData.Days) return;
