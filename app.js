@@ -1438,7 +1438,7 @@ const loadSchedule = async () => {
         el.scheduleGrid.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><span class="material-symbols-outlined spin-animation" style="font-size: 2rem;">sync</span><p>Загрузка расписания...</p></div>';
 
         const token = localStorage.getItem('ktp_token');
-        const res = await fetch('/api/schedule', { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch('api/schedule', { headers: { 'Authorization': `Bearer ${token}` } });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         
         let data = await res.json();
@@ -1468,7 +1468,7 @@ const saveSchedule = async () => {
         localStorage.setItem('ktp_scheduleData', JSON.stringify(scheduleData));
         try {
             const token = localStorage.getItem('ktp_token');
-            const res = await fetch('/api/schedule', {
+            const res = await fetch('api/schedule', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(scheduleData)
